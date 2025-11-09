@@ -1,0 +1,6 @@
+@Tennis_Score_HostAddress = http://localhost:5120
+
+GET {{Tennis_Score_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
