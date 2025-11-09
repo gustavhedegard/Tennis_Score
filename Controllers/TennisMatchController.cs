@@ -4,17 +4,26 @@ using Microsoft.AspNetCore.Mvc;
 [Route("[controller]")]
 public class TennisMatchController : ControllerBase
 {
+    private readonly ITennisMatchService _tennisMatchService;
+
+    public TennisMatchController(ITennisMatchService tennisMatchService)
+    {
+        _tennisMatchService = tennisMatchService;
+    }
 
     [HttpGet("get-score")]
-    public async Task<IActionResult> GetScore()
+    public async Task<ActionResult<ScoreDto>> GetScore()
     {
-         return await tennisMatchService.GetScore(response);
+        var response = await _tennisMatchService.GetScoreAsync();
+        return Ok(response);
     }
 
     [HttpPost("assign-point")]
     public async Task<IActionResult> AssignPoint([FromBody] AssignPointDto request)
     {
-        await tennisMatchService.AssignPoint(request);
+        await _tennisMatchService.AssignPointAsync(request);
+
+        return Ok();
     }
 
 }
