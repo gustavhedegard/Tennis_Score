@@ -1,7 +1,7 @@
 {
   "PlayerAScore": "Love",
   "PlayerBScore": "Love",
-  "Advantage": "",
+  "Advantage": null,
   "Winner": null,
   "Deuce": false
 }

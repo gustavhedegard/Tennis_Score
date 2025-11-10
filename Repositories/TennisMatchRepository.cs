@@ -1,8 +1,15 @@
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 public class TennisMatchRepository : ITennisMatchRepository
 {
     private readonly string _filePath = "matchInfo.json";
+    private static readonly JsonSerializerOptions JsonOptions = new()
+    {
+        WriteIndented = true,
+        Converters = { new JsonStringEnumConverter() }
+    };
+    
     public async Task<MatchInfoDto> GetMatchInfoAsync()
     {
         if (!File.Exists(_filePath))
@@ -11,7 +18,7 @@ public class TennisMatchRepository : ITennisMatchRepository
         }
 
         var json = await File.ReadAllTextAsync(_filePath);
-        var matchInfo = JsonSerializer.Deserialize<MatchInfoDto>(json);
+        var matchInfo = JsonSerializer.Deserialize<MatchInfoDto>(json, JsonOptions);
 
         return matchInfo ?? CreateNewMatch();
     }
@@ -24,11 +31,7 @@ public class TennisMatchRepository : ITennisMatchRepository
     
     public async Task AssignScoreAsync(MatchInfoDto matchInfo)
     {
-        var matchInfojson = JsonSerializer.Serialize(matchInfo, new JsonSerializerOptions
-        {
-            WriteIndented = true
-        });
-
+        var matchInfojson = JsonSerializer.Serialize(matchInfo, JsonOptions);
         await File.WriteAllTextAsync(_filePath, matchInfojson);
     }
 

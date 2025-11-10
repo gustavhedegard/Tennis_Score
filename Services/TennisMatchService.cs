@@ -49,6 +49,11 @@ public class TennisMatchService : ITennisMatchService
                 matchInfo.PlayerBScore++;
             }
 
+            if(matchInfo.PlayerAScore == Score.Forty && matchInfo.PlayerBScore == Score.Forty)
+            {
+                matchInfo.Deuce = true;
+            }
+
             await _tennisMatchRepository.AssignScoreAsync(matchInfo);
             return;
         }
