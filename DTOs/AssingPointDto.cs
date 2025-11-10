@@ -1,4 +1,4 @@
 public class AssignPointDto
 {
-    public string Player { get; set; }
+    public Player Player { get; set; }
 }

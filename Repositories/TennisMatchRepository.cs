@@ -36,10 +36,11 @@ public class TennisMatchRepository : ITennisMatchRepository
     {
         return new MatchInfoDto
         {
-            PlayerAScore = "Love",
-            PlayerBScore = "Love",
-            Advantage = "",
-            Deuce = false
+            PlayerAScore = Score.Love,
+            PlayerBScore = Score.Love,
+            Advantage = null,
+            Deuce = false,
+            Winner = null
         };
     }
 }
