@@ -32,7 +32,7 @@ public class TennisMatchRepository : ITennisMatchRepository
 
         return matchInfo;
     }
-    
+
     public async Task AssignScoreAsync(MatchInfoDto matchInfo)
     {
         var matchInfojson = JsonSerializer.Serialize(matchInfo, new JsonSerializerOptions
@@ -41,6 +41,14 @@ public class TennisMatchRepository : ITennisMatchRepository
         });
 
         await File.WriteAllTextAsync(_filePath, matchInfojson);
-        
+
+    }
+    
+    public async Task NewGameAsync()
+    {
+        if(File.Exists(_filePath))
+        {
+            File.Delete(_filePath);
+        }
     }
 }

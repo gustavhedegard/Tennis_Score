@@ -19,11 +19,14 @@ public class TennisMatchService : ITennisMatchService
     {
         var matchInfo = await _tennisMatchRepository.GetScoreAsync();
 
+        if (matchInfo.Winner != null)
+            return;
+
         bool isPlayerA = request.Player == "A";
         string currentPlayerScore = isPlayerA ? matchInfo.PlayerAScore : matchInfo.PlayerBScore;
         string opponentScore = isPlayerA ? matchInfo.PlayerBScore : matchInfo.PlayerAScore;
 
-        if(matchInfo.PlayerAScore == "Forty" && matchInfo.PlayerBScore == "Forty")
+        if (matchInfo.PlayerAScore == "Forty" && matchInfo.PlayerBScore == "Forty")
         {
             if (matchInfo.Advantage == request.Player)
             {
@@ -68,6 +71,11 @@ public class TennisMatchService : ITennisMatchService
             return;
         }
 
+    }
+    
+    public async Task NewGameAsync()
+    {
+        await _tennisMatchRepository.NewGameAsync();
     }
 
 

@@ -26,4 +26,11 @@ public class TennisMatchController : ControllerBase
         return Ok();
     }
 
+    [HttpDelete("new-game")]
+    public async Task<IActionResult> NewGame()
+    {
+        await _tennisMatchService.NewGameAsync();
+        return Ok();
+    }
+
 }
