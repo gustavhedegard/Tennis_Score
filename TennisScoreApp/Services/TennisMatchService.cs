@@ -1,5 +1,3 @@
-using System.Text.RegularExpressions;
-
 public class TennisMatchService : ITennisMatchService
 {
     private readonly ITennisMatchRepository _tennisMatchRepository;
@@ -9,13 +7,9 @@ public class TennisMatchService : ITennisMatchService
         _tennisMatchRepository = tennisMatchRepository;
     }
 
-    public async Task<MatchInfoDto> GetMatchInfoAsync()
-    {
-        return await _tennisMatchRepository.GetMatchInfoAsync();
-    }
     public async Task AssignPointAsync(AssignPointDto request)
     {
-        var matchInfo = await _tennisMatchRepository.GetMatchInfoAsync();
+        var matchInfo = await GetMatchInfoAsync();
 
         if (matchInfo.Winner != null)
             return;
@@ -27,14 +21,14 @@ public class TennisMatchService : ITennisMatchService
         if (currentPlayerScore == Score.Forty && opponentScore != Score.Forty)
         {
             matchInfo.Winner = request.Player;
-            await _tennisMatchRepository.AssignScoreAsync(matchInfo);
+            await SaveScoreAsync(matchInfo);
             return;
         }
-        
+
         if (matchInfo.PlayerAScore == Score.Forty && matchInfo.PlayerBScore == Score.Forty)
         {
             HandleDeuce(matchInfo, request.Player);
-            await _tennisMatchRepository.AssignScoreAsync(matchInfo);
+            await SaveScoreAsync(matchInfo);
             return;
         }
 
@@ -49,19 +43,29 @@ public class TennisMatchService : ITennisMatchService
                 matchInfo.PlayerBScore++;
             }
 
-            if(matchInfo.PlayerAScore == Score.Forty && matchInfo.PlayerBScore == Score.Forty)
+            if (matchInfo.PlayerAScore == Score.Forty && matchInfo.PlayerBScore == Score.Forty)
             {
                 matchInfo.Deuce = true;
             }
 
-            await _tennisMatchRepository.AssignScoreAsync(matchInfo);
+            await SaveScoreAsync(matchInfo);
             return;
         }
+    }
+    
+    public async Task<MatchInfoDto> GetMatchInfoAsync()
+    {
+        return await _tennisMatchRepository.GetMatchInfoAsync();
     }
 
     public async Task ResetMatchAsync()
     {
         await _tennisMatchRepository.ResetMatchAsync();
+    }
+    
+    private async Task SaveScoreAsync(MatchInfoDto matchInfo)
+    {
+        await _tennisMatchRepository.AssignScoreAsync(matchInfo);
     }
     
     private static void HandleDeuce(MatchInfoDto matchInfo, Player player)

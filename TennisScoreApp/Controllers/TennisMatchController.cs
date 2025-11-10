@@ -26,7 +26,7 @@ public class TennisMatchController : ControllerBase
         return Ok();
     }
 
-    [HttpDelete("new-game")]
+    [HttpPost("reset-game")]
     public async Task<IActionResult> NewGame()
     {
         await _tennisMatchService.ResetMatchAsync();
