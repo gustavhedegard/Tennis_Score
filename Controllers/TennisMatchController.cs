@@ -12,7 +12,7 @@ public class TennisMatchController : ControllerBase
     }
 
     [HttpGet("get-score")]
-    public async Task<ActionResult<ScoreDto>> GetScore()
+    public async Task<ActionResult<MatchInfoDto>> GetScore()
     {
         var response = await _tennisMatchService.GetScoreAsync();
         return Ok(response);

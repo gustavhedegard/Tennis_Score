@@ -1,4 +1,5 @@
 public interface ITennisMatchRepository
 {
-    public Task<(string player1, string player2)> GetScoreAsync();
+    public Task<MatchInfoDto> GetScoreAsync();
+    public Task AssignScoreAsync(MatchInfoDto matchInfo);
 }
