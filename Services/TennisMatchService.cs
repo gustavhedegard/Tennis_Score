@@ -10,14 +10,13 @@ public class TennisMatchService : ITennisMatchService
         _tennisMatchRepository = tennisMatchRepository;
     }
 
-    public async Task<MatchInfoDto> GetScoreAsync()
+    public async Task<MatchInfoDto> GetMatchInfoAsync()
     {
-        var matchInfo = await _tennisMatchRepository.GetScoreAsync();
-        return matchInfo;
+        return await _tennisMatchRepository.GetMatchInfoAsync();
     }
     public async Task AssignPointAsync(AssignPointDto request)
     {
-        var matchInfo = await _tennisMatchRepository.GetScoreAsync();
+        var matchInfo = await _tennisMatchRepository.GetMatchInfoAsync();
 
         if (matchInfo.Winner != null)
             return;
@@ -28,17 +27,20 @@ public class TennisMatchService : ITennisMatchService
 
         if (matchInfo.PlayerAScore == "Forty" && matchInfo.PlayerBScore == "Forty")
         {
+            // player already has advantege and wins
             if (matchInfo.Advantage == request.Player)
             {
                 matchInfo.Winner = request.Player;
-            }
+            } // deuce and player gets advantage
             else if (string.IsNullOrEmpty(matchInfo.Advantage))
             {
                 matchInfo.Advantage = request.Player;
+                matchInfo.Deuce = false;
             }
-            else
+            else // other player has advantage --> deuce
             {
                 matchInfo.Advantage = "";
+                matchInfo.Deuce = true;
             }
 
             await _tennisMatchRepository.AssignScoreAsync(matchInfo);
@@ -47,7 +49,6 @@ public class TennisMatchService : ITennisMatchService
 
         int currentIndex = Array.IndexOf(Scores, currentPlayerScore);
 
-        // om index är under 3 lägg på 1 för ny poäng, skriv ner ny poäng, hoppa ur metoden (return)
         if (currentIndex < 3)
         {
             var newScore = Scores[currentIndex + 1];
@@ -58,6 +59,12 @@ public class TennisMatchService : ITennisMatchService
             else
             {
                 matchInfo.PlayerBScore = newScore;
+            }
+
+            if(matchInfo.PlayerAScore == "Forty" && matchInfo.PlayerBScore == "Forty")
+            {
+                matchInfo.Deuce = true;
+                matchInfo.Advantage = "";
             }
 
             await _tennisMatchRepository.AssignScoreAsync(matchInfo);
@@ -71,12 +78,11 @@ public class TennisMatchService : ITennisMatchService
             return;
         }
 
+
     }
     
-    public async Task NewGameAsync()
+    public async Task ResetMatchAsync()
     {
-        await _tennisMatchRepository.NewGameAsync();
+        await _tennisMatchRepository.ResetMatchAsync();
     }
-
-
 }

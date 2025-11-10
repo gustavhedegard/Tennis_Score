@@ -1,6 +1,6 @@
 public interface ITennisMatchRepository
 {
-    public Task<MatchInfoDto> GetScoreAsync();
+    public Task<MatchInfoDto> GetMatchInfoAsync();
     public Task AssignScoreAsync(MatchInfoDto matchInfo);
-    public Task NewGameAsync();
+    public Task ResetMatchAsync();
 }

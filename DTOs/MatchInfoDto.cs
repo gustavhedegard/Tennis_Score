@@ -4,5 +4,5 @@ public class MatchInfoDto
     public string PlayerBScore { get; set; }
     public string Advantage { get; set; }
     public string Winner { get; set; }
-
+    public bool Deuce { get; set; } = false;
 }

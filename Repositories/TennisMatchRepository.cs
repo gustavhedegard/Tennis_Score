@@ -2,37 +2,26 @@ using System.Text.Json;
 
 public class TennisMatchRepository : ITennisMatchRepository
 {
-    private readonly string _filePath = "score.json";
-    public async Task<MatchInfoDto> GetScoreAsync()
+    private readonly string _filePath = "matchInfo.json";
+    public async Task<MatchInfoDto> GetMatchInfoAsync()
     {
         if (!File.Exists(_filePath))
         {
-            return new MatchInfoDto
-            {
-                PlayerAScore = "Love",
-                PlayerBScore = "Love",
-                Advantage = ""
-
-            };
+            return CreateNewMatch();
         }
 
         var json = await File.ReadAllTextAsync(_filePath);
         var matchInfo = JsonSerializer.Deserialize<MatchInfoDto>(json);
 
-        if (matchInfo == null)
-        {
-            return new MatchInfoDto
-            {
-                PlayerAScore = "Love",
-                PlayerBScore = "Love",
-                Advantage = ""
-
-            };
-        }
-
-        return matchInfo;
+        return matchInfo ?? CreateNewMatch();
     }
 
+    public async Task ResetMatchAsync()
+    {
+        var newMatch = CreateNewMatch();
+        await AssignScoreAsync(newMatch);
+    }
+    
     public async Task AssignScoreAsync(MatchInfoDto matchInfo)
     {
         var matchInfojson = JsonSerializer.Serialize(matchInfo, new JsonSerializerOptions
@@ -41,14 +30,16 @@ public class TennisMatchRepository : ITennisMatchRepository
         });
 
         await File.WriteAllTextAsync(_filePath, matchInfojson);
-
     }
-    
-    public async Task NewGameAsync()
+
+    private static MatchInfoDto CreateNewMatch()
     {
-        if(File.Exists(_filePath))
+        return new MatchInfoDto
         {
-            File.Delete(_filePath);
-        }
+            PlayerAScore = "Love",
+            PlayerBScore = "Love",
+            Advantage = "",
+            Deuce = false
+        };
     }
 }

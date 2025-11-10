@@ -14,7 +14,7 @@ public class TennisMatchController : ControllerBase
     [HttpGet("get-score")]
     public async Task<ActionResult<MatchInfoDto>> GetScore()
     {
-        var response = await _tennisMatchService.GetScoreAsync();
+        var response = await _tennisMatchService.GetMatchInfoAsync();
         return Ok(response);
     }
 
@@ -29,7 +29,7 @@ public class TennisMatchController : ControllerBase
     [HttpDelete("new-game")]
     public async Task<IActionResult> NewGame()
     {
-        await _tennisMatchService.NewGameAsync();
+        await _tennisMatchService.ResetMatchAsync();
         return Ok();
     }
 
