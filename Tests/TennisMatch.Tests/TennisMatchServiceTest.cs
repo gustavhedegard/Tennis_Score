@@ -1,6 +1,5 @@
 using Xunit;
 using Moq;
-using System.Threading.Tasks;
 
 public class TennisMatchServiceTests
 {
