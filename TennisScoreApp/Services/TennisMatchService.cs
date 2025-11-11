@@ -18,14 +18,14 @@ public class TennisMatchService : ITennisMatchService
         Score currentPlayerScore = isPlayerA ? matchInfo.PlayerAScore : matchInfo.PlayerBScore;
         Score opponentScore = isPlayerA ? matchInfo.PlayerBScore : matchInfo.PlayerAScore;
 
-        if (currentPlayerScore == Score.Forty && opponentScore != Score.Forty)
+        if (currentPlayerScore == Score.Forty && !IsDeuce(currentPlayerScore, opponentScore))
         {
             matchInfo.Winner = request.Player;
             await SaveScoreAsync(matchInfo);
             return;
         }
 
-        if (matchInfo.PlayerAScore == Score.Forty && matchInfo.PlayerBScore == Score.Forty)
+        if (IsDeuce(matchInfo.PlayerAScore, matchInfo.PlayerBScore))
         {
             HandleDeuce(matchInfo, request.Player);
             await SaveScoreAsync(matchInfo);
@@ -43,13 +43,43 @@ public class TennisMatchService : ITennisMatchService
                 matchInfo.PlayerBScore++;
             }
 
-            if (matchInfo.PlayerAScore == Score.Forty && matchInfo.PlayerBScore == Score.Forty)
+            if (IsDeuce(matchInfo.PlayerAScore, matchInfo.PlayerBScore))
             {
                 matchInfo.Deuce = true;
             }
 
             await SaveScoreAsync(matchInfo);
             return;
+        }
+    }
+
+    private static bool IsDeuce(Score firstScore, Score secondScore)
+    {
+        if (firstScore == Score.Forty && secondScore == Score.Forty)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    private static void HandleDeuce(MatchInfoDto matchInfo, Player player)
+    {
+        if (matchInfo.Advantage == player)
+        {
+            matchInfo.Winner = player;
+            matchInfo.Advantage = null;
+            matchInfo.Deuce = false;
+        }
+        else if (matchInfo.Advantage == null)
+        {
+            matchInfo.Advantage = player;
+            matchInfo.Deuce = false;
+        }
+        else
+        {
+            matchInfo.Advantage = null;
+            matchInfo.Deuce = true;
         }
     }
     
@@ -68,22 +98,4 @@ public class TennisMatchService : ITennisMatchService
         await _tennisMatchRepository.AssignScoreAsync(matchInfo);
     }
     
-    private static void HandleDeuce(MatchInfoDto matchInfo, Player player)
-    {
-        if (matchInfo.Advantage == player)
-        {
-            matchInfo.Winner = player;
-            matchInfo.Advantage = null;
-            matchInfo.Deuce = false;
-        }
-        else if (matchInfo.Advantage == null)
-        {
-            matchInfo.Advantage = player;
-            matchInfo.Deuce = false;
-        } else
-        {
-            matchInfo.Advantage = null;
-            matchInfo.Deuce = true;
-        }
-    }
 }
